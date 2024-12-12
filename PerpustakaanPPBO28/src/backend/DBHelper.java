@@ -13,7 +13,7 @@ public class DBHelper {
     public static void bukaKoneksi() {
         if(koneksi == null) {
             try {
-                String url = "jdbc:mysql://localhost:3306/dbperpus";
+                String url = "jdbc:mysql://localhost:3306/dbperpustakaan";
                 String user = "root";
                 String password = "";
                 DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
@@ -76,5 +76,9 @@ public class DBHelper {
             e.printStackTrace();
         }
         return rs;
+    }
+
+    static Connection getConnection() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
