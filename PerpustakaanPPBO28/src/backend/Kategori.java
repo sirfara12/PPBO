@@ -113,12 +113,13 @@ public class Kategori {
         if(getById(idkategori).getIdkategori() == 0) {
             String SQL = "INSERT INTO kategori (nama, keterangan) VALUES ("
             + "     '" + this.nama + "', "
-            + "     '" + this.keterangan + "')";
+            + "     '" + this.keterangan + "'"
+            + ")";
 
             this.idkategori = DBHelper.insertQueryGetId(SQL);
         } else {
             String SQL = "UPDATE kategori SET "
-                    + "     nama = '" +this.nama + "', "
+                    + "     nama = '" + this.nama + "', "
                     + "     keterangan = '" +this.keterangan + "' "
                     + "     WHERE idkategori = '" + this.idkategori + "'";
             
@@ -130,4 +131,8 @@ public class Kategori {
         String SQL = "DELETE FROM kategori WHERE idkategori = '" + this.idkategori + "'";
         DBHelper.executeQuery(SQL);
     } 
+     @Override
+    public String toString(){
+        return nama;
+    }
 }

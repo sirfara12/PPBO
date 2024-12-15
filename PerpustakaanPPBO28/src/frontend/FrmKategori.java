@@ -8,7 +8,7 @@ package frontend;
  *
  * @author sirfaratih
  */
-
+import backend.Kategori;
 import backend.*;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
@@ -56,6 +56,7 @@ public class FrmKategori extends javax.swing.JFrame {
             rowData[0] = kat.getIdkategori();
             rowData[1] = kat.getNama();
             rowData[2] = kat.getKeterangan();
+            
             ((DefaultTableModel) tblKategori.getModel()).addRow(rowData);
         }
     }
@@ -273,10 +274,11 @@ public class FrmKategori extends javax.swing.JFrame {
 
     private void btnHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusActionPerformed
         // TODO add your handling code here:
-        DefaultTableModel model = (DefaultTableModel) tblKategori.getModel();
+         DefaultTableModel model = (DefaultTableModel)tblKategori.getModel();
         int row = tblKategori.getSelectedRow();
-
+        
         Kategori kat = new Kategori().getById(Integer.parseInt(model.getValueAt(row, 0).toString()));
+        
         kat.delete();
         kosongkanForm();
         tampilkanData();
@@ -290,13 +292,14 @@ public class FrmKategori extends javax.swing.JFrame {
     private void btnCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariActionPerformed
         // TODO add your handling code here:
         cari(txtCari.getText());
+        tampilkanData();
     }//GEN-LAST:event_btnCariActionPerformed
 
     private void tblKategoriMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblKategoriMouseClicked
         // TODO add your handling code here:
-        DefaultTableModel model = (DefaultTableModel) tblKategori.getModel();
+       DefaultTableModel model = (DefaultTableModel)tblKategori.getModel();
         int row = tblKategori.getSelectedRow();
-
+        
         txtIdKategori.setText(model.getValueAt(row, 0).toString());
         txtNama.setText(model.getValueAt(row, 1).toString());
         txtKeterangan.setText(model.getValueAt(row, 2).toString());
@@ -330,6 +333,22 @@ public class FrmKategori extends javax.swing.JFrame {
         //</editor-fold>
         //</editor-fold>
 
+         try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(FrmKategori.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(FrmKategori.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(FrmKategori.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(FrmKategori.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {

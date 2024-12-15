@@ -8,9 +8,20 @@ package frontend;
  *
  * @author sirfaratih
  */
-import backend.*;
+import backend.Peminjaman;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import javax.swing.JOptionPane;
+import javax.swing.DefaultComboBoxModel;
+import backend.Anggota;
+import backend.Buku;
+import backend.Kategori;
+import backend.Pegawai;
+import backend.Peminjaman;
+import java.text.ParseException;
 import javax.swing.table.DefaultTableModel;
+
 
 public class FrmPeminjaman extends javax.swing.JFrame {
 
@@ -21,18 +32,20 @@ public class FrmPeminjaman extends javax.swing.JFrame {
         initComponents();
         tampilkanData();
         kosongkanForm();
+        tampilkanjcombopegawai();
     }
- public void kosongkanForm() {
+    public void kosongkanForm() {
         txtIdPeminjaman.setText("0");
         txtIdAnggota.setText("");
         txtIdBuku.setText("");
-        txtTanggalPinjam.setText("");
+        jcombopegawai.setSelectedIndex(0);
+        txtTanggalPinjam.setText(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
         txtTanggalKembali.setText("");
         lblNamaAnggota.setText("-");
         lblJudulBuku.setText("-");
     }
 
-     public void tampilkanData() {
+    public void tampilkanData() {
         String[] kolom = {"ID", "Nama Anggota", "Judul Buku", "Tgl Pinjam", "Tgl Kembali"};
         ArrayList<Peminjaman> list = new Peminjaman().getAll();
         Object rowData[] = new Object[5];
@@ -49,6 +62,45 @@ public class FrmPeminjaman extends javax.swing.JFrame {
             ((DefaultTableModel) tblPeminjaman.getModel()).addRow(rowData);
         }
     }
+    private String formatTanggal(String tanggal) {
+        try {
+            if (tanggal.isEmpty()) {
+                return ""; // Jika tanggal kosong, kembalikan string kosong
+            }
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd"); // Format dari database
+            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy/MM/dd"); // Format yang diinginkan
+            return outputFormat.format(inputFormat.parse(tanggal));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return tanggal; // Kembalikan tanggal asli jika terjadi error
+        }
+    }
+
+    private boolean isValidDateFormat(String date) {
+        if (date.trim().isEmpty()) {
+            return false;
+        }
+        try {
+            new SimpleDateFormat("yyyy/MM/dd").parse(date);
+            return true;
+        } catch (ParseException e) {
+            return false;
+        }
+    }
+
+    public void cariAnggota(String keyword){
+        Anggota anggota = new Anggota().getById(Integer.parseInt(keyword));
+        lblNamaAnggota.setText("Nama Anggota : "+anggota.getNama());
+    }
+    
+    public void cariBuku(String keyword){
+        Buku buku = new Buku().getById(Integer.parseInt(keyword));
+        lblJudulBuku.setText("Judul Buku : "+buku.getJudul());
+    }
+    public void tampilkanCmbPegawai() {
+        jcombopegawai.setModel(new DefaultComboBoxModel(new Pegawai().getAll().toArray()));
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -68,7 +120,6 @@ public class FrmPeminjaman extends javax.swing.JFrame {
         tblPeminjaman = new javax.swing.JTable();
         btntambahbaru = new javax.swing.JButton();
         btnsimpan = new javax.swing.JButton();
-        btnhapus = new javax.swing.JButton();
         txtIdPeminjaman = new javax.swing.JTextField();
         txtIdAnggota = new javax.swing.JTextField();
         txtIdBuku = new javax.swing.JTextField();
@@ -81,6 +132,10 @@ public class FrmPeminjaman extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         txtTanggalPinjam = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        btnCariBuku1 = new javax.swing.JButton();
+        lblJudulBuku1 = new javax.swing.JLabel();
+        jcombopegawai = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -123,13 +178,6 @@ public class FrmPeminjaman extends javax.swing.JFrame {
         btnsimpan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnsimpanActionPerformed(evt);
-            }
-        });
-
-        btnhapus.setText("Hapus");
-        btnhapus.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnhapusActionPerformed(evt);
             }
         });
 
@@ -180,6 +228,7 @@ public class FrmPeminjaman extends javax.swing.JFrame {
 
         jLabel5.setText("Tanggal Kembali");
 
+        txtTanggalPinjam.setEnabled(false);
         txtTanggalPinjam.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtTanggalPinjamActionPerformed(evt);
@@ -188,55 +237,79 @@ public class FrmPeminjaman extends javax.swing.JFrame {
 
         jLabel10.setText("Format: yyyy/mm/dd");
 
+        jLabel7.setText("Id Pegawai");
+
+        btnCariBuku1.setText("Cari");
+        btnCariBuku1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCariBuku1ActionPerformed(evt);
+            }
+        });
+
+        lblJudulBuku1.setText("Id Pegawai");
+
+        jcombopegawai.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel5)
                     .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(20, 20, 20)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel2))
-                        .addGap(60, 60, 60)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtIdPeminjaman, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(txtIdAnggota, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnCariAnggota)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lblNamaAnggota))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(65, 65, 65)
-                                .addComponent(jLabel1))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(txtTanggalKembali, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                        .addComponent(txtIdBuku, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btnCariBuku))
-                                    .addComponent(txtTanggalPinjam))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(lblJudulBuku)
-                                    .addComponent(jLabel9)
-                                    .addComponent(jLabel10)))))
-                    .addComponent(btnsimpan, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btntambahbaru)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnhapus, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(125, Short.MAX_VALUE))
+                                    .addComponent(jLabel6)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel5)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jLabel7)
+                                        .addComponent(jLabel4)))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(60, 60, 60)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(txtIdPeminjaman, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(txtIdAnggota, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(btnCariAnggota)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(lblNamaAnggota))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addGap(65, 65, 65)
+                                                .addComponent(jLabel1))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(txtIdBuku, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(btnCariBuku)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(lblJudulBuku))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(txtTanggalPinjam, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jLabel9))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(txtTanggalKembali, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jLabel10))))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(59, 59, 59)
+                                        .addComponent(jcombopegawai, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(btnCariBuku1)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(lblJudulBuku1))))
+                            .addComponent(btntambahbaru)
+                            .addComponent(btnsimpan, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 217, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -259,26 +332,29 @@ public class FrmPeminjaman extends javax.swing.JFrame {
                     .addComponent(txtIdBuku, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnCariBuku)
                     .addComponent(lblJudulBuku))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel6)
-                    .addComponent(jLabel9)
-                    .addComponent(txtTanggalPinjam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel5)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(txtTanggalKembali, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel10)))
-                .addGap(12, 12, 12)
-                .addComponent(btnsimpan)
-                .addGap(55, 55, 55)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btntambahbaru)
-                    .addComponent(btnhapus))
-                .addGap(38, 38, 38)
+                    .addComponent(jLabel7)
+                    .addComponent(btnCariBuku1)
+                    .addComponent(lblJudulBuku1)
+                    .addComponent(jcombopegawai, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(txtTanggalPinjam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel9))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(txtTanggalKembali, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel10))
+                .addGap(30, 30, 30)
+                .addComponent(btntambahbaru)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnsimpan)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(91, Short.MAX_VALUE))
         );
 
         pack();
@@ -299,56 +375,62 @@ public class FrmPeminjaman extends javax.swing.JFrame {
 
     private void btnsimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsimpanActionPerformed
         // TODO add your handling code here:
-         try {
-            // Validasi input
-            if (txtIdAnggota.getText().trim().isEmpty()
-                    || txtIdBuku.getText().trim().isEmpty()
-                    || txtTanggalPinjam.getText().trim().isEmpty()
-                     || txtTanggalKembali.getText().trim().isEmpty()) {
-                javax.swing.JOptionPane.showMessageDialog(this,
-                        "Semua field harus diisi!");
+          try {
+            // Validasi input tidak boleh kosong
+            if (txtIdAnggota.getText().trim().isEmpty() || txtIdBuku.getText().trim().isEmpty() || jcombopegawai.getSelectedItem() == null) {
+                JOptionPane.showMessageDialog(this, "Semua data harus diisi!", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            Peminjaman pem = new Peminjaman();
-            pem.setIdpeminjaman(Integer.parseInt(txtIdPeminjaman.getText()));
-
-            Anggota anggota = new Anggota().getById(Integer.parseInt(txtIdAnggota.getText()));
-            if (anggota.getIdanggota() == 0) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Anggota tidak ditemukan!");
+            // Validasi input adalah angka
+            if (!txtIdAnggota.getText().matches("\\d+") || !txtIdBuku.getText().matches("\\d+")) {
+                JOptionPane.showMessageDialog(this, "ID Anggota dan ID Buku harus berupa angka!", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            pem.setAnggota(anggota);
 
-            Buku buku = new Buku().getById(Integer.parseInt(txtIdBuku.getText()));
-            if (buku.getIdbuku() == 0) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Buku tidak ditemukan!");
+            // Parsing ID Anggota, ID Buku, dan Pegawai
+            int idAnggota = Integer.parseInt(txtIdAnggota.getText().trim());
+            int idBuku = Integer.parseInt(txtIdBuku.getText().trim());
+            Pegawai pegawaiTerpilih = new Pegawai().getById(((Pegawai) jcombopegawai.getSelectedItem()).getidpegawai());
+
+            // Validasi format tanggal (yyyy/MM/dd)
+            if (!isValidDateFormat(txtTanggalPinjam.getText().trim())) {
+                JOptionPane.showMessageDialog(this, "Format tanggal harus yyyy/MM/dd!", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            pem.setBuku(buku);
 
-            pem.setTanggalPinjam(txtTanggalPinjam.getText());
+            // Membuat objek Peminjaman
+            Peminjaman peminjaman = new Peminjaman();
+            peminjaman.getAnggota().setIdanggota(idAnggota);
+            peminjaman.getBuku().setIdbuku(idBuku);
+            peminjaman.setTanggalPinjam(txtTanggalPinjam.getText().trim());
+            peminjaman.setTanggalKembali(txtTanggalKembali.getText().trim().isEmpty() ? null : txtTanggalKembali.getText().trim());
+            peminjaman.setPegawai(pegawaiTerpilih); // Set Pegawai
 
-            pem.save();
-            txtIdPeminjaman.setText(Integer.toString(pem.getIdpeminjaman()));
+            // Periksa apakah ini data baru atau update
+            if (txtIdPeminjaman.getText().trim().isEmpty()) {
+                // Data baru
+                peminjaman.save();
+                JOptionPane.showMessageDialog(this, "Data baru berhasil disimpan!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                // Data lama, lakukan update
+                peminjaman.setIdpeminjaman(Integer.parseInt(txtIdPeminjaman.getText().trim()));
+                peminjaman.save(); // save() akan otomatis melakukan update berdasarkan ID
+                JOptionPane.showMessageDialog(this, "Data berhasil diperbarui!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+            }
+
+            // Refresh data tabel
             tampilkanData();
-        } catch (NumberFormatException e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "ID harus berupa angka!");
-        } catch (Exception e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
+
+            // Kosongkan form setelah simpan
+            kosongkanForm();
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "ID Anggota dan ID Buku harus berupa angka!", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat menyimpan data!", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnsimpanActionPerformed
-
-    private void btnhapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnhapusActionPerformed
-        // TODO add your handling code here:
-        DefaultTableModel model = (DefaultTableModel) tblPeminjaman.getModel();
-        int row = tblPeminjaman.getSelectedRow();
-
-        Peminjaman pem = new Peminjaman().getById(Integer.parseInt(model.getValueAt(row, 0).toString()));
-        pem.delete();
-        kosongkanForm();
-        tampilkanData();
-    }//GEN-LAST:event_btnhapusActionPerformed
 
     private void txtIdBukuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdBukuActionPerformed
         // TODO add your handling code here:
@@ -376,19 +458,36 @@ public class FrmPeminjaman extends javax.swing.JFrame {
 
     private void tblPeminjamanMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblPeminjamanMouseClicked
         // TODO add your handling code here:
-       DefaultTableModel model = (DefaultTableModel) tblPeminjaman.getModel();
+        DefaultTableModel model = (DefaultTableModel) tblPeminjaman.getModel();
         int row = tblPeminjaman.getSelectedRow();
+        Peminjaman peminjaman = new Peminjaman();
 
         if (row >= 0) {
-            Peminjaman pem = new Peminjaman().getById(Integer.parseInt(model.getValueAt(row, 0).toString()));
+            peminjaman = peminjaman.getById(Integer.parseInt(model.getValueAt(row, 0).toString()));
+            // Ambil data dari tabel
+            txtIdPeminjaman.setText(String.valueOf(peminjaman.getIdpeminjaman()));
+            jcombopegawai.getModel().setSelectedItem(peminjaman.getPegawai());
+            txtIdAnggota.setText(String.valueOf(peminjaman.getAnggota().getIdanggota()));
+            txtIdBuku.setText(String.valueOf(peminjaman.getBuku().getIdbuku()));
 
-            txtIdPeminjaman.setText(String.valueOf(pem.getIdpeminjaman()));
-            txtIdAnggota.setText(String.valueOf(pem.getAnggota().getIdanggota()));
-            txtIdBuku.setText(String.valueOf(pem.getBuku().getIdbuku()));
-            txtTanggalPinjam.setText(pem.getTanggalPinjam());
-            txtTanggalKembali.setText(pem.getTanggalKembali());
-            lblNamaAnggota.setText(pem.getAnggota().getNama());
-            lblJudulBuku.setText(pem.getBuku().getJudul());
+            // Format ulang tanggal pinjam dan tanggal kembali
+            txtTanggalPinjam.setText(formatTanggal(String.valueOf(peminjaman.getTanggalPinjam())));
+            String tanggalKembali = String.valueOf(peminjaman.getTanggalKembali());
+            if (tanggalKembali == null || tanggalKembali.trim().isEmpty() || tanggalKembali.equals("null")) {
+                // Jika tanggal kembali kosong, kosongkan teks dan enable input
+                txtTanggalKembali.setText("");
+                txtTanggalKembali.setEnabled(true);
+            } else {
+                // Jika tanggal kembali tidak kosong, format dan disable input
+                txtTanggalKembali.setText(formatTanggal(tanggalKembali));
+                txtTanggalKembali.setEnabled(false);
+            }
+
+            // Disable input lainnya
+            jcombopegawai.setEnabled(false);
+            txtIdAnggota.setEnabled(false);
+            txtIdBuku.setEnabled(false);
+            txtTanggalPinjam.setEnabled(false);
         }
     }//GEN-LAST:event_tblPeminjamanMouseClicked
 
@@ -399,6 +498,10 @@ public class FrmPeminjaman extends javax.swing.JFrame {
     private void txtIdAnggotaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdAnggotaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtIdAnggotaActionPerformed
+
+    private void btnCariBuku1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariBuku1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnCariBuku1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -454,7 +557,7 @@ public class FrmPeminjaman extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCariAnggota;
     private javax.swing.JButton btnCariBuku;
-    private javax.swing.JButton btnhapus;
+    private javax.swing.JButton btnCariBuku1;
     private javax.swing.JButton btnsimpan;
     private javax.swing.JButton btntambahbaru;
     private javax.swing.JLabel jLabel1;
@@ -464,9 +567,12 @@ public class FrmPeminjaman extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JComboBox<String> jcombopegawai;
     private javax.swing.JLabel lblJudulBuku;
+    private javax.swing.JLabel lblJudulBuku1;
     private javax.swing.JLabel lblNamaAnggota;
     private javax.swing.JTable tblPeminjaman;
     private javax.swing.JTextField txtIdAnggota;
@@ -475,4 +581,10 @@ public class FrmPeminjaman extends javax.swing.JFrame {
     private javax.swing.JTextField txtTanggalKembali;
     private javax.swing.JTextField txtTanggalPinjam;
     // End of variables declaration//GEN-END:variables
+
+    private void tampilkanjcombopegawai() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    
 }

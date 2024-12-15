@@ -40,7 +40,7 @@ public class FrmBuku extends javax.swing.JFrame {
 
         for (int i = 0; i < list.size(); i++) {
             rowData[0] = list.get(i).getIdbuku();
-            rowData[1] = list.get(i).getKategori().getNama();
+            rowData[1] = list.get(i).getKategori();
             rowData[2] = list.get(i).getJudul();
             rowData[3] = list.get(i).getPenulis();
             rowData[4] = list.get(i).getPenerbit();
@@ -58,7 +58,7 @@ public class FrmBuku extends javax.swing.JFrame {
 
         for (Buku buku : list) {
             rowData[0] = buku.getIdbuku();
-            rowData[1] = buku.getKategori().getNama();
+            rowData[1] = buku.getKategori();
             rowData[2] = buku.getJudul();
             rowData[3] = buku.getPenulis();
             rowData[4] = buku.getPenerbit();
@@ -275,11 +275,11 @@ public class FrmBuku extends javax.swing.JFrame {
 
     private void btnHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusActionPerformed
         // TODO add your handling code here:
-        
-        DefaultTableModel model = (DefaultTableModel)tblBuku.getModel();
+        DefaultTableModel model = (DefaultTableModel) tblBuku.getModel();
         int row = tblBuku.getSelectedRow();
-        Buku buku = new Buku().getByid(Integer.parseInt(model.getValueAt(row,0).toString()));
-        buku.delete();
+
+        Buku kat = new Buku().getById(Integer.parseInt(model.getValueAt(row, 0).toString()));
+        kat.delete();
         kosongkanForm();
         tampilkanData();
     }//GEN-LAST:event_btnHapusActionPerformed
@@ -359,6 +359,22 @@ public class FrmBuku extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(FrmBuku.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(FrmBuku.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(FrmBuku.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(FrmBuku.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(FrmBuku.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {

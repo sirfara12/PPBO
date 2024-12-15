@@ -68,85 +68,68 @@ public class Buku {
         this.penulis = penulis;
     }
     public Buku getById(int id) {
-    Buku buku = new Buku();
-    ResultSet rs = DBHelper.selectQuery("SELECT "
-            + " b.idbuku AS idbuku, "
-            + " b.judul AS judul, "
-            + " b.penerbit AS penerbit, "
-            + " b.penulis AS penulis, "
-            + " k.idkategori AS idkategori, "
-            + " k.nama AS nama, "
-            + " k.keterangan AS keterangan "
-            + " FROM buku b "
-            + " LEFT JOIN kategori k ON b.idkategori = k.idkategori "
-            + " WHERE b.idbuku = '" + id + "'");
+        Buku buku = new Buku();
+        String query = "SELECT b.idbuku, b.judul, b.penerbit, b.penulis, b.idkategori, k.nama " +
+                       "FROM buku b " +
+                       "LEFT JOIN kategori k ON b.idkategori = k.idkategori " +
+                       "WHERE b.idbuku = '" + id + "'";
 
+        ResultSet rs = DBHelper.selectQuery(query);
     try {
-        while (rs.next()) {
-            buku = new Buku();
+        if (rs.next()) {
             buku.setIdbuku(rs.getInt("idbuku"));
-            buku.getKategori().setIdkategori(rs.getInt("idkategori"));
-            buku.getKategori().setNama(rs.getString("nama"));
-            buku.getKategori().setKeterangan(rs.getString("keterangan"));
-            buku.setJudul(rs.getString("judul"));
-            buku.setPenerbit(rs.getString("penerbit"));
-            buku.setPenulis(rs.getString("penulis"));
+                buku.getKategori().setIdkategori(rs.getInt("idkategori"));
+                buku.getKategori().setNama(rs.getString("nama"));
+                buku.setJudul(rs.getString("judul"));
+                buku.setPenerbit(rs.getString("penerbit"));
+                buku.setPenulis(rs.getString("penulis"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
+        return buku;
     }
-
-    return buku;
-}
 
 public ArrayList<Buku> getAll() {
-    ArrayList<Buku> ListBuku = new ArrayList<>();
-    ResultSet rs = DBHelper.selectQuery("SELECT "
-            + " b.idbuku AS idbuku, "
-            + " b.judul AS judul, "
-            + " b.penerbit AS penerbit, "
-            + " b.penulis AS penulis, "
-            + " k.idkategori AS idkategori, "
-            + " k.nama AS nama, "
-            + " k.keterangan AS keterangan "
-            + " FROM buku b "
-            + " LEFT JOIN kategori k ON b.idkategori = k.idkategori ");
+        ArrayList<Buku> listBuku = new ArrayList<>();
+        String query = "SELECT b.idbuku, b.judul, b.penerbit, b.penulis, b.idkategori, k.nama " +
+                       "FROM buku b " +
+                       "LEFT JOIN kategori k ON b.idkategori = k.idkategori";
 
-    try {
-        while (rs.next()) {
-            Buku buku = new Buku();
-            buku.setIdbuku(rs.getInt("idbuku"));
-            buku.getKategori().setIdkategori(rs.getInt("idkategori"));
-            buku.getKategori().setNama(rs.getString("nama"));
-            buku.getKategori().setKeterangan(rs.getString("keterangan"));
-            buku.setJudul(rs.getString("judul"));
-            buku.setPenerbit(rs.getString("penerbit"));
-            buku.setPenulis(rs.getString("penulis"));
+        ResultSet rs = DBHelper.selectQuery(query);
 
-            ListBuku.add(buku);
+        try {
+            while (rs.next()) {
+                Buku buku = new Buku();
+                buku.setIdbuku(rs.getInt("idbuku"));
+                buku.getKategori().setIdkategori(rs.getInt("idkategori"));
+                buku.getKategori().setNama(rs.getString("nama"));
+                buku.setJudul(rs.getString("judul"));
+                buku.setPenerbit(rs.getString("penerbit"));
+                buku.setPenulis(rs.getString("penulis"));
+
+                listBuku.add(buku);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
+        return listBuku;
     }
 
-    return ListBuku;
-}
 public ArrayList<Buku> search(String keyword) {
     ArrayList<Buku> ListBuku = new ArrayList<>();
-
-    ResultSet rs = DBHelper.selectQuery("SELECT "
-            + "    b.idbuku AS idbuku, "
-            + "    b.judul AS judul, "
-            + "    b.penerbit AS penerbit, "
-            + "    b.penulis AS penulis, "
-            + "    b.idkategori AS idkategori, "
-            + "    k.nama AS nama, "
-            + "    k.keterangan AS keterangan "
-            + "    FROM buku b "
-            + "    LEFT JOIN kategori k ON b.idkategori = k.idkategori "
-            + "    WHERE b.judul LIKE '%" + keyword + "%' "
-            + "    OR b.penerbit LIKE '%" + keyword + "%' "
-            + "    OR b.penulis LIKE '%" + keyword + "%'");
+    ResultSet rs = DBHelper.selectQuery("SELECT " +
+            " b.idbuku AS idbuku, " +
+            " b.judul AS judul, " +
+            " b.penerbit AS penerbit, " +
+            " b.penulis AS penulis, " +
+            " k.idkategori AS idkategori, " +
+            " k.nama AS nama, " +
+            " FROM buku b " +
+            " LEFT JOIN kategori k ON b.idkategori = k.idkategori " +
+            " WHERE b.judul LIKE '%" + keyword + "%' " +
+            " OR b.penerbit LIKE '%" + keyword + "%' " +
+            " OR b.penulis LIKE '%" + keyword + "%'");
 
     try {
         while (rs.next()) {
@@ -154,7 +137,6 @@ public ArrayList<Buku> search(String keyword) {
             buku.setIdbuku(rs.getInt("idbuku"));
             buku.getKategori().setIdkategori(rs.getInt("idkategori"));
             buku.getKategori().setNama(rs.getString("nama"));
-            buku.getKategori().setKeterangan(rs.getString("keterangan"));
             buku.setJudul(rs.getString("judul"));
             buku.setPenerbit(rs.getString("penerbit"));
             buku.setPenulis(rs.getString("penulis"));
@@ -167,23 +149,24 @@ public ArrayList<Buku> search(String keyword) {
 
     return ListBuku;
 }
+
 
 public void save() {
     if (getById(idbuku).getIdbuku() == 0) {
-        String SQL = "INSERT INTO buku (judul, idkategori, penulis, penerbit) VALUES("
-                + "    '" + this.judul + "', "
-                + "    '" + this.getKategori().getIdkategori() + "', "
-                + "    '" + this.penulis + "', "
-                + "    '" + this.penerbit + "' "
-                + "    )";
+        String SQL = "INSERT INTO buku (judul, idkategori, penulis, penerbit) VALUES(" +
+                " '" + this.judul + "', " +
+                " '" + this.getKategori().getIdkategori() + "', " +
+                " '" + this.penulis + "', " +
+                " '" + this.penerbit + "' " +
+                " )";
         this.idbuku = DBHelper.insertQueryGetId(SQL);
     } else {
-        String SQL = "UPDATE buku SET "
-                + "    judul = '" + this.judul + "', "
-                + "    idkategori = '" + this.getKategori().getIdkategori() + "', "
-                + "    penulis = '" + this.penulis + "', "
-                + "    penerbit = '" + this.penerbit + "' "
-                + "    WHERE idbuku = '" + this.idbuku + "'";
+        String SQL = "UPDATE buku SET " +
+                " judul = '" + this.judul + "', " +
+                " idkategori = '" + this.getKategori().getIdkategori() + "', " +
+                " penulis = '" + this.penulis + "', " +
+                " penerbit = '" + this.penerbit + "' " +
+                " WHERE idbuku = '" + this.idbuku + "'";
         DBHelper.executeQuery(SQL);
     }
 }
@@ -193,8 +176,5 @@ public void delete() {
     DBHelper.executeQuery(SQL);
 }
 
-    public Buku getByid(int parseInt) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
 
 }
